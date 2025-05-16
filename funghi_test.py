@@ -1,0 +1,1 @@
+print("INizio del progetto funghi")
