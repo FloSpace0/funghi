@@ -5,6 +5,11 @@ from tkinter import filedialog
 # === CONFIGURAZIONE ===
 CELL_SIZE = 10  # dimensione in pixel di ogni cella
 CELL_COLOR = (0, 0, 0, 120)  # Nero semi-trasparente
+# Colori
+WHITE = (255, 255, 255)
+BLACK = (0, 0, 0)
+
+
 
 # === MAPPA COLORI ===
 terrain_colors = {
@@ -29,8 +34,13 @@ if not file_path:
 pygame.init()
 image = pygame.image.load(file_path)
 img_width, img_height = image.get_size()
-win = pygame.display.set_mode((img_width, img_height))
+SIDE_PANEL_WIDTH = 250  # Larghezza della sezione laterale
+win = pygame.display.set_mode((img_width + SIDE_PANEL_WIDTH, img_height))
+# win = pygame.display.set_mode((img_width, img_height))
 pygame.display.set_caption("Trova Funghi 🍄")
+
+# Font
+font = pygame.font.SysFont(None, 48)
 
 # === CALCOLO GRIGLIA ADATTIVA ===
 NUM_COLS = img_width // CELL_SIZE
@@ -54,6 +64,28 @@ def draw_grid():
                 color = terrain_colors[terrain]
                 rect = pygame.Rect(col * cell_width, row * cell_height, cell_width, cell_height)
                 pygame.draw.rect(grid_surface, color, rect)
+
+# Funzione per disegnare un pulsante
+def draw_button(text, x, y, w, h, color, hover_color, action=None):
+    mouse = pygame.mouse.get_pos()
+    click = pygame.mouse.get_pressed()
+
+    # Controllo hover
+    if x < mouse[0] < x + w and y < mouse[1] < y + h:
+        pygame.draw.rect(win, hover_color, (x, y, w, h))
+        if click[0] == 1 and action:
+            action()
+    else:
+        pygame.draw.rect(win, color, (x, y, w, h))
+
+    # Scritta sul pulsante
+    text_surface = font.render(text, True, BLACK)
+    text_rect = text_surface.get_rect(center=(x + w / 2, y + h / 2))
+    win.blit(text_surface, text_rect)
+
+# Azione da eseguire quando si clicca il pulsante
+def start_game():
+    print("Hai cliccato il pulsante Start!")
 
 
 # === LOOP PRINCIPALE ===
@@ -94,6 +126,12 @@ while running:
 
     # --- Disegna ---
     win.blit(image, (0, 0))  # sfondo
+    # Disegna il pannello laterale
+    pygame.draw.rect(win, (200, 200, 200), (img_width, 0, SIDE_PANEL_WIDTH, img_height))  # grigio chiaro
+    # Scrivi un testo (es: titolo)
+    text = font.render("Opzioni", True, BLACK)
+    win.blit(text, (img_width + 10, 10))
     draw_grid()
+    draw_button("Start", 200, 150, 200, 60, (0, 200, 0), (0, 255, 0), start_game)
     win.blit(grid_surface, (0, 0))  # griglia trasparente sopra
     pygame.display.update()
