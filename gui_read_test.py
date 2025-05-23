@@ -9,7 +9,11 @@ CELL_COLOR = (0, 0, 0, 120)  # Nero semi-trasparente
 WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
 
-
+#CONFIGURAZIONE COLORI VALORI REALI
+bianco = 1
+nero = 2 
+verde = 3
+acqua = 10
 
 # === MAPPA COLORI ===
 terrain_colors = {
@@ -35,7 +39,9 @@ pygame.init()
 image = pygame.image.load(file_path)
 img_width, img_height = image.get_size()
 SIDE_PANEL_WIDTH = 250  # Larghezza della sezione laterale
-win = pygame.display.set_mode((img_width + SIDE_PANEL_WIDTH, img_height))
+UNDER_PANEL_HEIGHT = 250  # Altezza della sezione inferiore dei risultati
+
+win = pygame.display.set_mode((img_width + SIDE_PANEL_WIDTH, img_height + UNDER_PANEL_HEIGHT))
 # win = pygame.display.set_mode((img_width, img_height))
 pygame.display.set_caption("Trova Funghi 🍄")
 
@@ -65,6 +71,7 @@ def draw_grid():
                 rect = pygame.Rect(col * cell_width, row * cell_height, cell_width, cell_height)
                 pygame.draw.rect(grid_surface, color, rect)
 
+
 # Funzione per disegnare un pulsante
 def draw_button(text, x, y, w, h, color, hover_color, action=None):
     mouse = pygame.mouse.get_pos()
@@ -84,8 +91,50 @@ def draw_button(text, x, y, w, h, color, hover_color, action=None):
     win.blit(text_surface, text_rect)
 
 # Azione da eseguire quando si clicca il pulsante
-def start_game():
-    print("Hai cliccato il pulsante Start!")
+def stampa_ciao():
+    print("Ciao!")
+
+def aumenta_valore(colore):
+    global bianco
+    global nero
+    global verde
+    global acqua
+
+    if colore == "bianco":
+        bianco += 1
+        print(bianco)
+    elif colore == "nero":
+        nero += 1
+        print(nero)
+    elif colore == "verde":
+        verde += 1
+        print(verde)
+    elif colore == "acqua":
+        acqua += 1
+        print(acqua)
+
+
+def diminuisci_valore(colore):
+    global bianco
+    global nero
+    global verde
+    global acqua
+
+    if colore == "bianco":
+        bianco -= 1
+        print(bianco)
+    elif colore == "nero":
+        nero -= 1
+        print(nero)
+    elif colore == "verde":
+        verde -= 1
+        print(verde)
+    elif colore == "acqua":
+        acqua -= 1
+        print(acqua)
+
+    
+
 
 
 # === LOOP PRINCIPALE ===
@@ -96,7 +145,7 @@ while running:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
-    
+
 
     if event.type == pygame.KEYDOWN:
         if event.key == pygame.K_KP0:
@@ -127,11 +176,14 @@ while running:
     # --- Disegna ---
     win.blit(image, (0, 0))  # sfondo
     # Disegna il pannello laterale
-    pygame.draw.rect(win, (200, 200, 200), (img_width, 0, SIDE_PANEL_WIDTH, img_height))  # grigio chiaro
+    pygame.draw.rect(win, BLACK, (img_width, 0, SIDE_PANEL_WIDTH, img_height))  # grigio chiaro
+    # DIsegna il pannello inferiore dei risultati
+    pygame.draw.rect(win, BLACK, (0, img_height, img_width + SIDE_PANEL_WIDTH, UNDER_PANEL_HEIGHT))  # grigio chiaro
     # Scrivi un testo (es: titolo)
-    text = font.render("Opzioni", True, BLACK)
+    text = font.render("Opzioni", True, WHITE)
     win.blit(text, (img_width + 10, 10))
     draw_grid()
-    draw_button("Start", 200, 150, 200, 60, (0, 200, 0), (0, 255, 0), start_game)
+    draw_button("Ciao", img_width + 30, 200, 200, 60, (255, 255, 255), (219, 219, 217), lambda: stampa_ciao())
+    draw_button("bianco", img_width + 30, 150, 200, 60, (255, 255, 255), (219, 219, 217), lambda: aumenta_valore("bianco"))
     win.blit(grid_surface, (0, 0))  # griglia trasparente sopra
     pygame.display.update()
