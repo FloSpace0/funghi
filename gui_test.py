@@ -73,6 +73,7 @@ class PathfindingGUI:
         self.grid_surface = pygame.Surface((self.img_width, self.img_height), pygame.SRCALPHA)
         
         # Griglia dati (0 = vuoto, stringa = tipo terreno)
+        # Inizializziamo la griglia senza percorsi (vuota)
         self.grid = [[0 for _ in range(self.num_cols)] for _ in range(self.num_rows)]
         
         # Stato
@@ -89,7 +90,7 @@ class PathfindingGUI:
         self.last_nodes_expanded = 0
         self.last_path_length = 0
         
-        # UI Elements
+        # Inizializziamo le liste che conterranno gli elementi della GUI
         self.buttons = []
         self.terrain_buttons = []
         self.algorithm_buttons = []
