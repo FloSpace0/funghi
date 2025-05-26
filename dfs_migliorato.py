@@ -1,28 +1,21 @@
-from search_algorithm import SearchAlgorithm
-from queue import LifoQueue
-from search_algorithm import Node
-class DFS(SearchAlgorithm):
-    """Depth First Search
-
-    Args:
-        Solver (_type_): This is an implementation for the Solver class
-    """
 def dfs(problem):
-    stack = [(problem.init, [problem.init])]
-    visited = set()
+    frontiera = [(problem.init, [problem.init])]  # pila: lista usata come stack
+    visto = set()
     explored = []
 
-    while stack:
-        current, path = stack.pop()
-        if current in visited:
+    while frontiera:  # controlla se la lista non è vuota
+        current, path = frontiera.pop()  # LIFO: prende l'ultimo elemento
+
+        if current in visto:
             continue
-        visited.add(current)
+        visto.add(current)
         explored.append(current)
+
         if problem.isGoal(current):
             return path, explored
 
-        for successor, _ in problem.getSuccessors(current):
-            if successor not in visited:
-                stack.append((successor, path + [successor]))
+        for successor, _ in reversed(problem.getSuccessors(current)):  
+            if successor not in visto:
+                frontiera.append((successor, path + [successor]))
 
     return [], explored
