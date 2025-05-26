@@ -50,8 +50,11 @@ class PathfindingGUI:
         self.img_width, self.img_height = self.image.get_size()
         
         # Finestra
-        self.win_width = self.img_width + SIDE_PANEL_WIDTH
-        self.win_height = self.img_height + UNDER_PANEL_HEIGHT
+        self.img_height=int(self.img_height//1.6)
+        self.img_width=int(self.img_width//1.6)
+        
+        self.win_width = (self.img_width + SIDE_PANEL_WIDTH)
+        self.win_height = (self.img_height + UNDER_PANEL_HEIGHT)
         self.win = pygame.display.set_mode((self.win_width, self.win_height))
         pygame.display.set_caption("Pathfinding AI - Visualizzatore")
         
