@@ -7,11 +7,6 @@ from pathfinding_problem import PathfindingProblem
 from world import World
 from dfs_migliorato import dfs  # e non dfs da quello vecchio
 
-# Placeholder per gli altri algoritmi (creerai questi file separatamente)
-# from a_star import a_star
-# from bfs import bfs
-# from ucs import ucs
-
 # === CONFIGURAZIONE ===
 CELL_SIZE = 10
 SIDE_PANEL_WIDTH = 300
@@ -78,15 +73,15 @@ class PathfindingGUI:
         # Inizializziamo la griglia senza percorsi (vuota)
         self.grid = [[0 for _ in range(self.num_cols)] for _ in range(self.num_rows)]
         
-        # Stato
-        self.current_terrain = "verde"
+        # Stato inizializzazione
+        self.current_terrain = "verde" 
         self.selected_algorithm = "A*"
         self.start_pos = None
         self.goal_pos = None
         self.path = []
         self.explored_nodes = []
         
-        # Risultati
+        # Risultati inizializzazione
         self.last_cost = 0
         self.last_time = 0
         self.last_nodes_expanded = 0
@@ -101,7 +96,6 @@ class PathfindingGUI:
         self._create_ui_elements()
         
     def _create_ui_elements(self):
-        """Crea tutti gli elementi UI"""
         panel_x = self.img_width + 15
         y_offset = 50
         
@@ -128,7 +122,7 @@ class PathfindingGUI:
                 lambda t=terrain_key: self._change_cost(t, -1)
             )
             
-            # Il valore del costo sarà mostrato tra i due pulsanti (nel draw)
+            # Il valore del costo sarà mostrato tra i due pulsanti 
             
             plus_btn = Button(
                 panel_x + 220, y_offset + i * 40,
@@ -304,17 +298,7 @@ class PathfindingGUI:
         self.last_cost = self._calculate_path_cost()
 
         print(f"Ricerca completata. Costo: {self.last_cost}, Nodi: {self.last_nodes_expanded}")
-    
-    def _prepare_cost_grid(self) -> List[List[int]]:
-        """Prepara una griglia con i costi"""
-        costs = [[1 for _ in range(self.num_cols)] for _ in range(self.num_rows)]
-        for row in range(self.num_rows):
-            for col in range(self.num_cols):
-                terrain = self.grid[row][col]
-                if terrain and terrain in terrain_types:
-                    costs[row][col] = terrain_types[terrain].cost
-        return costs
-        
+
     def _calculate_path_cost(self) -> int:
         """Calcola il costo totale del percorso"""
         if not self.path:
