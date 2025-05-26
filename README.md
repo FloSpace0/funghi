@@ -4,3 +4,5 @@ pip install -r requirements.txt
 
 # PER AVVIARE IL PROGRAMMA
 avviare con python da terminale il file della gui
+
+    python3 gui_final.py
