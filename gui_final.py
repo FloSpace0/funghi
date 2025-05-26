@@ -3,7 +3,9 @@ import tkinter as tk
 from tkinter import filedialog
 import time
 from typing import Tuple, List, Dict, Optional
-from dfs import dfs, dfs_limited  # Importa l'algoritmo DFS
+from pathfinding_problem import PathfindingProblem
+from world import World
+from dfs_migliorato import dfs  # e non dfs da quello vecchio
 
 # Placeholder per gli altri algoritmi (creerai questi file separatamente)
 # from a_star import a_star
@@ -236,61 +238,73 @@ class PathfindingGUI:
         self.last_path_length = 0
         
     def _run_pathfinding(self):
-        """Esegue l'algoritmo di pathfinding selezionato"""
         if not self.start_pos or not self.goal_pos:
             print("Imposta prima START e GOAL!")
             return
-            
-        # Prepara i costi per la griglia
-        costs = self._prepare_cost_grid()
-        
-        # Misura il tempo di esecuzione
+
+        # === CREA IL MONDO SOLO CON LE CELLE DISEGNATE ===
+        walls = set()
+        for row in range(self.num_rows):
+            for col in range(self.num_cols):
+                terrain = self.grid[row][col]
+
+                # Le celle NON disegnate (valore = 0) sono muri
+                if terrain == 0:
+                    walls.add((row, col))
+
+        terrain_map = {}
+        for row in range(self.num_rows):
+            for col in range(self.num_cols):
+                terrain = self.grid[row][col]
+                if terrain and terrain in terrain_types:
+                    terrain_map[(row, col)] = terrain
+
+        # Crea oggetto World (istanza!)
+        world = World(self.num_rows, self.num_cols, walls, terrain_map)
+
+        # Mappa dei costi
+        cost_map = {
+            k: terrain_types[k].cost for k in terrain_types
+        }
+
+        # Crea problema (usa l'istanza `world`)
+        problem = PathfindingProblem(world, self.start_pos, self.goal_pos, cost_map)
+
+        # Algoritmo
         start_time = time.time()
-        
-        # Esegue l'algoritmo selezionato
+
         if self.selected_algorithm == "DFS":
-            # Usa DFS standard
-            self.path, self.explored_nodes = dfs(self.start_pos, self.goal_pos, self.grid, costs)
-            
-            # Oppure usa DFS con limite di profondità per griglie grandi:
-            # self.path, self.explored_nodes = dfs_limited(self.start_pos, self.goal_pos, self.grid, costs, max_depth=50)
-            
-        elif self.selected_algorithm == "A*":
-            # Quando avrai implementato A*
-            # self.path, self.explored_nodes = a_star(self.start_pos, self.goal_pos, self.grid, costs)
-            print("A* non ancora implementato")
-            self.path = []
-            self.explored_nodes = []
-            
+            from dfs_migliorato import dfs
+            path, explored = dfs(problem)
+
         elif self.selected_algorithm == "BFS":
-            # Quando avrai implementato BFS
-            # self.path, self.explored_nodes = bfs(self.start_pos, self.goal_pos, self.grid, costs)
-            print("BFS non ancora implementato")
-            self.path = []
-            self.explored_nodes = []
-            
+            from bfs import bfs
+            path, explored = bfs(problem)
+        
         elif self.selected_algorithm == "UCS":
-            # Quando avrai implementato UCS
-            # self.path, self.explored_nodes = ucs(self.start_pos, self.goal_pos, self.grid, costs)
-            print("UCS non ancora implementato")
-            self.path = []
-            self.explored_nodes = []
+            from ucs import ucs
+            path, explored = ucs(problem)
+        elif self.selected_algorithm == "A*":
+            from a_star import astar, manhattan_heuristic
+            path, explored = astar(problem, heuristic=manhattan_heuristic)
         
+
+
+
+
+
         end_time = time.time()
-        
-        # Aggiorna statistiche
-        self.last_time = (end_time - start_time) * 1000  # in millisecondi
-        self.last_nodes_expanded = len(self.explored_nodes)
-        self.last_path_length = len(self.path)
+
+        # Salva risultati
+        self.path = path
+        self.explored_nodes = explored
+        self.last_time = (end_time - start_time) * 1000
+        self.last_nodes_expanded = len(explored)
+        self.last_path_length = len(path)
         self.last_cost = self._calculate_path_cost()
-        
-        # Stampa risultati per debug
-        if self.path:
-            print(f"Percorso trovato con {self.selected_algorithm}!")
-            print(f"Lunghezza: {self.last_path_length}, Costo: {self.last_cost}")
-        else:
-            print(f"Nessun percorso trovato con {self.selected_algorithm}")
-        
+
+        print(f"Ricerca completata. Costo: {self.last_cost}, Nodi: {self.last_nodes_expanded}")
+    
     def _prepare_cost_grid(self) -> List[List[int]]:
         """Prepara una griglia con i costi"""
         costs = [[1 for _ in range(self.num_cols)] for _ in range(self.num_rows)]
