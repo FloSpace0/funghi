@@ -4,7 +4,7 @@ def dfs(problem):
     explored = []
 
     while frontiera:  # controlla se la lista non è vuota
-        current, path = frontiera.pop()  # LIFO: prende l'ultimo elemento
+        current, path = frontiera.pop()  # prende l'ultimo elemento
 
         if current in visto:
             continue
